@@ -2,20 +2,23 @@
 using Bulky.DataAccess.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
+using Bulky.DataAccess.Repository.IRepository;
+using Bulky.DataAccess.Repository;
 
-namespace BulkyWeb.Controllers
+namespace BulkyWeb.Areas.Admin.Controllers
 {
+    [Area("Admin")]
     public class CategoryController : Controller
     {
-        private readonly ApplicationDbContext _db;
-        public CategoryController(ApplicationDbContext db)
+        private readonly IUnitOfWork _UnitOfWork;
+        public CategoryController(IUnitOfWork UnitOfWork)
         {
-                _db = db;
+            _UnitOfWork = UnitOfWork;
         }
 
         public IActionResult Index()
         {
-            List<Category> objCategoryList = _db.Category.ToList();
+            List<Category> objCategoryList = _UnitOfWork.Catergory.GetAll().ToList();
 
             return View(objCategoryList);
         }
@@ -32,11 +35,11 @@ namespace BulkyWeb.Controllers
                 ModelState.AddModelError("name", "Display Name and Display orderid is same");
             }
             if (ModelState.IsValid)
-            { 
-            _db.Category.Add(obj);
-            _db.SaveChanges();
-             TempData["Success"] = "Category created successfully";
-             return RedirectToAction("index");
+            {
+                _UnitOfWork.Catergory.Add(obj);
+                _UnitOfWork.Save();
+                TempData["Success"] = "Category created successfully";
+                return RedirectToAction("index");
             }
             return View();
         }
@@ -44,10 +47,10 @@ namespace BulkyWeb.Controllers
         public IActionResult Edit(int? id)
         {
             if (id == null || id == 0)
-            { 
-            return NotFound();
+            {
+                return NotFound();
             }
-            Category? categoryID = _db.Category.Find(id);
+            Category? categoryID = _UnitOfWork.Catergory.GET(u => u.ID == id);
             if (categoryID == null)
             {
                 return NotFound();
@@ -57,11 +60,11 @@ namespace BulkyWeb.Controllers
         [HttpPost]
         public IActionResult Edit(Category obj)
         {
-            
+
             if (ModelState.IsValid)
             {
-                _db.Category.Update(obj);
-                _db.SaveChanges();
+                _UnitOfWork.Catergory.Update(obj);
+                _UnitOfWork.Save();
                 TempData["Success"] = "Category updated successfully";
                 return RedirectToAction("index");
             }
@@ -73,7 +76,7 @@ namespace BulkyWeb.Controllers
             {
                 return NotFound();
             }
-            Category? categoryID = _db.Category.Find(id);
+            Category? categoryID = _UnitOfWork.Catergory.GET(u=>u.ID==id);
             if (categoryID == null)
             {
                 return NotFound();
@@ -83,15 +86,15 @@ namespace BulkyWeb.Controllers
         [HttpPost, ActionName("Delete")]
         public IActionResult DeletePOST(int? id)
         {
-            Category? obj = _db.Category.Find(id);
+            Category? obj = _UnitOfWork.Catergory.GET(u => u.ID == id);
 
             if (obj == null)
             {
                 return NotFound();
             }
 
-            _db.Category.Remove(obj);
-            _db.SaveChanges();
+            _UnitOfWork.Catergory.Remove(obj);
+            _UnitOfWork.Save();
             TempData["Success"] = "Category deleted successfully";
 
             return RedirectToAction("Index");
