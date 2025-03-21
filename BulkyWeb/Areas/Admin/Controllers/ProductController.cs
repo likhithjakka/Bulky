@@ -8,10 +8,13 @@ using Microsoft.CodeAnalysis;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Bulky.Models.ViewModel;
 using Microsoft.DotNet.Scaffolding.Shared.Messaging;
+using Microsoft.AspNetCore.Authorization;
+using Bulky.Utility;
 
 namespace BulkyWeb.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize (Roles =SD.Role_Admin)]
     public class ProductController : Controller
     {
         private readonly IUnitOfWork _UnitOfWork;
