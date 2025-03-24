@@ -5,6 +5,8 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Bulky.Models
 {
@@ -24,6 +26,8 @@ namespace Bulky.Models
         [DisplayName("Phone Number")]
 
         public string? PhoneNumber { get; set; }
+
+       
 
     }
 }
